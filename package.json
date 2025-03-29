@@ -1,0 +1,23 @@
+{
+  "name": "sql-utils",
+  "version": "1.0.0",
+  "description": "A library for SQL utilities, providing tools for building SQL queries and managing database connections for PostgreSQL and SQLite.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "info@metapool.app",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "pg": "^8.14.1",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.11",
+    "@types/pg": "^8.11.11",
+    "typescript": "^4.5.4"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"No tests specified\" && exit 0"
+  }
+}
