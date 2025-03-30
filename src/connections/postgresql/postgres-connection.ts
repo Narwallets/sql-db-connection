@@ -1,6 +1,7 @@
-import { QueryResult, QueryResultRow, PoolClient } from 'pg';
 import { SqlConnection } from '../abstract-SqlConnection';
 import { SupportedDbEngines } from '../abstract-ConnectionPool';
+import { PoolClient } from 'pg';
+import { QueryResult, QueryResultRow } from '../..';
 
 // is created by the pool
 export class PostgresConnection extends SqlConnection {

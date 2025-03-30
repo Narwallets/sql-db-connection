@@ -1,4 +1,4 @@
-import { QueryResult, QueryResultRow } from "pg";
+import { QueryResult, QueryResultRow } from "..";
 import { buildInsert } from "../builders/build-inserts";
 import { SupportedDbEngines } from "./abstract-ConnectionPool";
 

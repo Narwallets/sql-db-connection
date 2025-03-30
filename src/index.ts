@@ -2,7 +2,30 @@ import { DbConnectionPoolOptions, SqlDbConnectionPool } from "./connections/abst
 import { PostgresSqlDbConnectionPool } from './connections/postgresql/postgres-connection-pool';
 import { SQLiteDbConnectionPool } from './connections/sqlite/sqlite3-connection-pool';
 
-export { QueryResultBase, QueryResultRow, QueryResult, FieldDef } from 'pg';
+export interface FieldDef {
+    name: string;
+    tableID: number;
+    columnID: number;
+    dataTypeID: number;
+    dataTypeSize: number;
+    dataTypeModifier: number;
+    format: string;
+}
+
+export interface QueryResultBase {
+    command: string;
+    rowCount: number | null;
+    oid: number;
+    fields: FieldDef[];
+}
+
+export interface QueryResultRow {
+    [column: string]: any;
+}
+
+export interface QueryResult<R extends QueryResultRow = any> extends QueryResultBase {
+    rows: R[];
+}
 
 export * from './connections/abstract-SqlConnection';
 export * from './connections/abstract-ConnectionPool';
