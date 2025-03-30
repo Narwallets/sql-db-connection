@@ -1,10 +1,10 @@
 {
-  "name": "sql-utils",
+  "name": "sql-db-connection",
   "version": "1.0.0",
-  "description": "A library for SQL utilities, providing tools for building SQL queries and managing database connections for PostgreSQL and SQLite.",
+  "description": "A library for abstracted SQL DB access, providing tools for building SQL queries and managing database connections for PostgreSQL and SQLite.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "author": "info@metapool.app",
+  "author": "info@narwallets.com",
   "license": "MIT",
   "private": false,
   "dependencies": {

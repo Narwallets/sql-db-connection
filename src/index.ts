@@ -1,21 +1,25 @@
-import { DbConnectionPoolOptions, SqlDbConnectionPool, SupportedDbEngines } from './connections/abstract-sql-db-pool-and-connection';
-import { PostgresSqlDbConnectionPool } from './connections/postgresql/postgres-connection';
-import { SQLiteDbConnectionPool } from './connections/sqlite/sqlite-connection';
+import { DbConnectionPoolOptions, SqlDbConnectionPool } from "./connections/abstract-ConnectionPool";
+import { PostgresSqlDbConnectionPool } from './connections/postgresql/postgres-connection-pool';
+import { SQLiteDbConnectionPool } from './connections/sqlite/sqlite3-connection-pool';
 
-export * from './connections/abstract-sql-db-pool-and-connection';
+export * from './connections/abstract-SqlConnection';
+export * from './connections/abstract-ConnectionPool';
 export * from './builders/build-inserts';
+export * from './connections/postgresql/postgres-connection-pool';
 export * from './connections/postgresql/postgres-connection';
-export * from './connections/sqlite/sqlite-connection';
+export * from './connections/sqlite/sqlite3-connection-pool';
+export * from './connections/sqlite/sqlite3-connection';
+export * from './appTableSchema';
 
-export function getDbConnectionPool(
-    dbEngine: SupportedDbEngines,
+export function createDbConnectionPool(
     options: DbConnectionPoolOptions
 ): SqlDbConnectionPool {
-    if (dbEngine === 'pg') {
-        return new PostgresSqlDbConnectionPool(options);
-    } else if (dbEngine === 'sq3') {
-        return new SQLiteDbConnectionPool(options);
-    } else {
-        throw new Error(`Unsupported database engine: ${dbEngine}`);
+    switch (options.engine) {
+        case 'pg':
+            return new PostgresSqlDbConnectionPool(options);
+        case 'sq3':
+            return new SQLiteDbConnectionPool(options);
+        default:
+            throw new Error(`Unsupported database engine: ${options.engine}`);
     }
 }

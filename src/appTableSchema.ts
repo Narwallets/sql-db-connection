@@ -1,5 +1,5 @@
-import { isoTruncDate } from "../utils/datetime";
-import { SqlConnection } from "./abstract-sql-db-pool-and-connection";
+import { isoTruncDate } from "./utils/datetime";
+import { SqlConnection } from "./connections/abstract-SqlConnection";
 
 export type AppDbVersionRow = {
   app_code: string;
@@ -63,10 +63,10 @@ export async function getAppTableSchemaVersion(conn: SqlConnection, appCode: str
   );
   let version = result.rows[0].version;
   if (version == null) { // no rows in version table
+    version = 0
     await conn.execute(
-      `insert into app_db_version(app_code,version,date_updated) values ($1,$2)`,
-      [appCode, isoTruncDate()]);
-    version = 1
+      `insert into app_db_version(app_code,version,date_updated) values ($1,$2,$3)`,
+      [appCode, version, isoTruncDate()]);
   }
   console.log("DB version:", version)
   return version

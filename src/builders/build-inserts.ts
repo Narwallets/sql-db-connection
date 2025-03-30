@@ -1,55 +1,64 @@
-import { OnConflictDoUpdate } from "../connections/abstract-sql-db-pool-and-connection";
+import { OnConflictUpdate } from "../connections/abstract-SqlConnection";
 
 /**
  * generates an SQL INSERT statement for inserting multiple rows into a table.
  * It supports conflict resolution using the ON CONFLICT clause.
- * @param dbEngine
- * @param insertCmd
  * @param table
  * @param rows
  * @param onConflict
  * @returns
  */
 export function buildInsert(
-    dbEngine: "pg" | "sq3",
-    insertCmd: "insert" | "insert or replace",
     table: string,
     rows: Record<string, any>[],
-    onConflict?: OnConflictDoUpdate,
+    onConflict?: OnConflictUpdate,
 )
     : {
         statement: string,
         values: any[]
     } {
-    let fields = [], placeholders = [], values = []
+    let fields = [], values = []
+    // use rows[0] to get the fields
+    //  assuming all rows have the same fields
     for (let key in rows[0]) {
         fields.push(key)
     }
+    // push placeholders and values
     let index = 0
     let valuesStatementPart = []
     for (let row of rows) {
-        let placeholders = []
+        let thisRowPlaceholders = []
         for (let field of fields) {
             index++
-            placeholders.push(dbEngine == "sq3" ? "?" : "$" + index)
+            thisRowPlaceholders.push("$" + index)
             values.push(row[field])
         }
-        valuesStatementPart.push(`values (${placeholders.join(",")})`)
-        values.push(...fields.map(field => row[field])); // Collect values for the row
+        // enclose each value row with placeholders in parentheses
+        valuesStatementPart.push(`(${thisRowPlaceholders.join(",")})`)
     }
 
     let statement =
-        `${insertCmd} into ${table}(${fields.join(",")})`
-        + valuesStatementPart.join(",")
+        `insert into ${table} (${fields.join(",")})`
+        + ` values ${valuesStatementPart.join(",")}`
+
+    //  Note:
+    // "RETURNING *;" can be added to the end of the statement
+    //  to return the inserted rows.
+    //  This is not supported in SQLite, so it should be added
+    //  conditionally based on the dbEngine.
+    //  For PostgreSQL, you can add it like this:
+    //  statement += " RETURNING *"
+    //  For SQLite, you can omit it or handle it differently.
+    //  For example, you can use the last_insert_rowid() function
+    //  to get the last inserted row ID.
 
     if (onConflict) {
-        let setFieldsWithExcludedValues = fields.map(field => `${field}=EXCLUDED.${field}`)
-        statement = statement +
-            " ON CONFLICT " +
-            onConflict.onConflictArgument +
+        statement = statement + '\n' +
+            " ON CONFLICT (" + onConflict.conflictFields + ")" +
             " DO UPDATE SET " +
-            setFieldsWithExcludedValues.join(",") +
-            " " + onConflict.onConflictDoUpdateCondition
+            fields.map(field => `${field}=EXCLUDED.${field}`).join(",") +
+            " " + (onConflict.doUpdateOnConflictCondition || "")
     }
     return { statement, values }
+
 }
