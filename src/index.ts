@@ -2,6 +2,8 @@ import { DbConnectionPoolOptions, SqlDbConnectionPool } from "./connections/abst
 import { PostgresSqlDbConnectionPool } from './connections/postgresql/postgres-connection-pool';
 import { SQLiteDbConnectionPool } from './connections/sqlite/sqlite3-connection-pool';
 
+export { QueryResultBase, QueryResultRow, QueryResult, FieldDef } from 'pg';
+
 export * from './connections/abstract-SqlConnection';
 export * from './connections/abstract-ConnectionPool';
 export * from './builders/build-inserts';
