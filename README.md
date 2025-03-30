@@ -19,6 +19,8 @@ npm install sql-db-connection
 ```typescript
 import { getDbConnectionPool } from 'sql-db-utils';
 
+const MY_APP_CODE = "my-app"
+
 export const CREATE_TABLE_APP_DEB_VERSION = `
   CREATE TABLE IF NOT EXISTS app_db_version (
     app_code TEXT,
@@ -43,9 +45,9 @@ const result = await conn.query<AppDbVersionRow>(
 );
 let version = result.rows[0].version;
 if (version == null) { // no rows in version table
-  await conn.insert("app_db_version",
-    {app_code, version:0, date_updated:isoTruncDate()},
-    {onConflictUpdate: { onConflictFields: "app_code" }}) // insert or replace
+  await conn.insertOrReplace("app_db_version",
+    {app_code: MY_APP_CODE, version:0, date_updated:isoTruncDate()},
+    "app_code" ) // insert or replace using app_code as primary key
   version = 0
 }
 console.log("DB version:", version)
@@ -55,27 +57,17 @@ conn.release()
 ### Example 2
 
 ```typescript
-  await conn.insertOrReplace("app_db_version",
+  const result = await conn.insert("app_db_version",
     {app_code, version:0, date_updated:isoTruncDate()},
-    "app_code") // primary key, will replace if this value already exists
-```
-
-### Example 3
-
-```typescript
-  await conn.insert("app_db_version",
-    {app_code, version:0, date_updated:isoTruncDate()},
-    {onConflictUpdate: { onConflictFields: "app_code" }}) // explicit insert or replace
+    {onConflictUpdate: { onConflictFields: "app_code" }}) // explicit insert or replace using onConflictUpdate
 ```
 
 ### Execute
 
 ```typescript
-  await conn.execute("update app_db_version set version=$1",
-    {app_code, version:0, date_updated:isoTruncDate()},
-    {onConflictUpdate: { onConflictFields: "app_code" }}) // explicit insert or replace
+  const result = await conn.execute("update app_db_version set version=$1 where app_code=$2", [2,'my-app'])
 ```
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for more details.
+This project is licensed under the MIT License
