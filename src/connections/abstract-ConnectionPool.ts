@@ -9,6 +9,7 @@ export type DbConnectionPoolOptions = {
     host?: string;
     user?: string;
     port?: number;
+    ssl?: { rejectUnauthorized: boolean }; // pg: config
     caCertificateFile?: string // certificate file to make sure we connect to the right server
 }
 
